@@ -18,7 +18,9 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add_student():
-    name, email, course = request.form['name'], request.form['email'], request.form['course']
+    name = request.form['name']
+    email = request.form['email']
+    course = request.form['course']
     conn = get_db_connection()
     conn.execute('INSERT INTO students (name, email, course) VALUES (?, ?, ?)', (name, email, course))
     conn.commit()
@@ -27,7 +29,9 @@ def add_student():
 
 @app.route('/update/<int:id>', methods=['POST'])
 def update_student(id):
-    name, email, course = request.form['name'], request.form['email'], request.form['course']
+    name = request.form['name']
+    email = request.form['email']
+    course = request.form['course']
     conn = get_db_connection()
     conn.execute('UPDATE students SET name=?, email=?, course=? WHERE id=?', (name, email, course, id))
     conn.commit()
