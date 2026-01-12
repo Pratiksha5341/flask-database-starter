@@ -1,50 +1,110 @@
-from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
+"""
+Part 1: Basic Flask with SQLite Database
+=========================================
+Your first step into databases! Moving from hardcoded lists to real database.
+
+What You'll Learn:
+- Connecting Flask to SQLite database
+- Creating a table
+- Inserting data (Create)
+- Reading data (Read)
+
+Prerequisites: You should know Flask basics (routes, templates, render_template)
+"""
+
+from flask import Flask, render_template
+import sqlite3  # Built-in Python library for SQLite database
 
 app = Flask(__name__)
-DATABASE = 'students.db'
+
+DATABASE = 'students.db'  # Database file name (will be created automatically)
+
+
+# =============================================================================
+# DATABASE HELPER FUNCTIONS
+# =============================================================================
 
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
+    """Create a connection to the database"""
+    conn = sqlite3.connect(DATABASE)  # Connect to database file
+    conn.row_factory = sqlite3.Row  # This allows accessing columns by name (like dict)
     return conn
+
+
+def init_db():
+    """Create the table if it doesn't exist"""
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            course TEXT NOT NULL
+        )
+    ''')  # SQL command to create table with 4 columns
+    conn.commit()  # Save changes to database
+    conn.close()  # Close connection
+
+
+# =============================================================================
+# ROUTES
+# =============================================================================
 
 @app.route('/')
 def index():
-    conn = get_db_connection()
-    students = conn.execute('SELECT * FROM students').fetchall()
-    conn.close()
+    """Home page - Display all students from database"""
+    conn = get_db_connection()  # Step 1: Connect to database
+    students = conn.execute('SELECT * FROM students').fetchall()  # Step 2: Get all rows
+    conn.close()  # Step 3: Close connection
     return render_template('index.html', students=students)
 
-@app.route('/add', methods=['POST'])
-def add_student():
-    name = request.form['name']
-    email = request.form['email']
-    course = request.form['course']
-    conn = get_db_connection()
-    conn.execute('INSERT INTO students (name, email, course) VALUES (?, ?, ?)', (name, email, course))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('index'))
 
-@app.route('/update/<int:id>', methods=['POST'])
-def update_student(id):
-    name = request.form['name']
-    email = request.form['email']
-    course = request.form['course']
+@app.route('/add')
+def add_sample_student():
+    """Add a sample student to database (for testing)"""
     conn = get_db_connection()
-    conn.execute('UPDATE students SET name=?, email=?, course=? WHERE id=?', (name, email, course, id))
-    conn.commit()
+    conn.execute(
+        'INSERT INTO students (name, email, course) VALUES (?, ?, ?)',
+        ('Riya', 'riya@example.com', 'Java')  # ? are placeholders (safe from SQL injection)
+    )
+    conn.commit()  # Don't forget to commit!
     conn.close()
-    return redirect(url_for('index'))
+    return 'Student added! <a href="/">Go back to home</a>'
 
-@app.route('/delete/<int:id>')
-def delete_student(id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM students WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    init_db()  # Create table when app starts
     app.run(debug=True)
+
+
+# =============================================================================
+# KEY CONCEPTS EXPLAINED:
+# =============================================================================
+#
+# 1. SQLite: A lightweight database stored in a single file (.db)
+#    - No server needed (unlike MySQL/PostgreSQL)
+#    - Perfect for learning and small projects
+#
+# 2. Connection Flow:
+#    connect → execute SQL → commit (if changing data) → close
+#
+# 3. SQL Commands Used:
+#    - CREATE TABLE: Define table structure
+#    - SELECT * FROM: Get all data
+#    - INSERT INTO: Add new data
+#
+# 4. row_factory = sqlite3.Row:
+#    - Without this: row[0], row[1] (access by index)
+#    - With this: row['name'], row['email'] (access by column name)
+#
+# =============================================================================
+
+
+# =============================================================================
+# EXERCISE:
+# =============================================================================
+#
+# Try modifying `add_sample_student()` to add different students with
+# different names!
+#
+# =============================================================================
