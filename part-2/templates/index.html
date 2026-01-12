@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Part 2 - Full CRUD Operations</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
@@ -34,6 +36,12 @@
     {% endwith %}
 
     <a href="{{ url_for('add_student') }}" class="btn btn-add">+ Add New Student</a>
+
+    <form method="get">
+        <input type="text" name="search" placeholder="Search by name" value="{{ search or '' }}">
+        <button type="submit" class="btn btn-edit">Search</button>
+        <a href="{{ url_for('index') }}" class="btn btn-cancel">Reset</a>
+    </form>
 
     {% if students %}
         <table>
