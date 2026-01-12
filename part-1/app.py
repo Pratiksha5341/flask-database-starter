@@ -1,28 +1,9 @@
-"""
-Part 1: Basic Flask with SQLite Database
-=========================================
-Your first step into databases! Moving from hardcoded lists to real database.
-
-What You'll Learn:
-- Connecting Flask to SQLite database
-- Creating a table
-- Inserting data (Create)
-- Reading data (Read)
-
-Prerequisites: You should know Flask basics (routes, templates, render_template)
-"""
-
 from flask import Flask, render_template
 import sqlite3  # Built-in Python library for SQLite database
 
 app = Flask(__name__)
 
 DATABASE = 'students.db'  # Database file name (will be created automatically)
-
-
-# =============================================================================
-# DATABASE HELPER FUNCTIONS
-# =============================================================================
 
 def get_db_connection():
     """Create a connection to the database"""
@@ -45,10 +26,6 @@ def init_db():
     conn.commit()  # Save changes to database
     conn.close()  # Close connection
 
-
-# =============================================================================
-# ROUTES
-# =============================================================================
 
 @app.route('/')
 def index():
@@ -76,35 +53,3 @@ if __name__ == '__main__':
     init_db()  # Create table when app starts
     app.run(debug=True)
 
-
-# =============================================================================
-# KEY CONCEPTS EXPLAINED:
-# =============================================================================
-#
-# 1. SQLite: A lightweight database stored in a single file (.db)
-#    - No server needed (unlike MySQL/PostgreSQL)
-#    - Perfect for learning and small projects
-#
-# 2. Connection Flow:
-#    connect → execute SQL → commit (if changing data) → close
-#
-# 3. SQL Commands Used:
-#    - CREATE TABLE: Define table structure
-#    - SELECT * FROM: Get all data
-#    - INSERT INTO: Add new data
-#
-# 4. row_factory = sqlite3.Row:
-#    - Without this: row[0], row[1] (access by index)
-#    - With this: row['name'], row['email'] (access by column name)
-#
-# =============================================================================
-
-
-# =============================================================================
-# EXERCISE:
-# =============================================================================
-#
-# Try modifying `add_sample_student()` to add different students with
-# different names!
-#
-# =============================================================================
